@@ -1,0 +1,27 @@
+import math
+class Solution:
+    def solveNQueens(self, n):
+        """
+        :type n: int
+        :rtype: List[List[str]]
+        """
+        pos = [-1]*n    #[1,3,0,2] 1表示第一行的第二个位置
+        res = []
+        tmp = []
+        self.dfs(0, n, tmp, res, pos)
+        return res
+    def dfs(self, row, lines, tmp, res, pos):
+        if row == lines:
+            res.append(tmp)
+            return
+        for i in range(lines):  #遍历列
+            if self.valid(row, i, pos):
+                pos[row] = i
+                self.dfs(row+1, lines, tmp+['.'*i+'Q'+'.'*(lines-i-1)], res, pos)
+                
+    def valid(self, row, col, pos):
+        for i in range(row):
+            if pos[i] == col or abs(pos[i]-col) == abs(row-i):  #同列或同斜线
+                return False
+        return True
+        
