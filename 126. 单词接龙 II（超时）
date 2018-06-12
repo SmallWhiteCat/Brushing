@@ -1,0 +1,47 @@
+class Solution:
+    def findLadders(self, beginWord, endWord, wordList):
+        """
+        :type beginWord: str
+        :type endWord: str
+        :type wordList: List[str]
+        :rtype: List[List[str]]
+        """
+        self.res = []
+        res = []
+        self.len_w = len(wordList[0])
+        self.len_n = len(wordList)
+        self.visit = [False for i in range(self.len_n)]
+        self.origin = beginWord
+        self.max_ = self.len_n
+        self.dfs(beginWord, endWord, wordList, [beginWord])
+        if not self.res:
+            return []
+        # num = min([len(i) for i in self.res])
+        # for i in self.res:
+        #     if len(i)==num: 
+        #         res.append(i)
+        # return res
+        
+    def dfs(self, word, end, arr, tmp):
+        if word == end:
+            tmp_ = tmp[:]
+            if len(tmp_) < self.max_:
+                self.max_ = len(tmp_)
+            self.res.append(tmp_)
+            return  
+        for i in range(self.len_n):
+            if not self.visit[i] and self.valid(word, arr[i]):
+                self.visit[i] = True
+                tmp.append(arr[i])
+                if len(tmp) > self.max_:
+                    break
+                self.dfs(arr[i], end, arr, tmp)
+                tmp.remove(tmp[-1])
+                self.visit[i] = False
+    def valid(self, word, word_):
+        if word_ == self.origin :
+            return False
+        for i in range(self.len_w):
+            if word[:i]+word[i+1:] == word_[:i]+word_[i+1:]:
+                return True
+        return False
