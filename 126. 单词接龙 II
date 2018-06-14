@@ -1,0 +1,50 @@
+class Solution:
+    def findLadders(self, beginWord, endWord, wordList):
+        """
+        :type beginWord: str
+        :type endWord: str
+        :type wordList: List[str]
+        :rtype: List[List[str]]
+        """
+        def buildpath(path, word):
+            if len(prevMap[word])==0:
+                path.append(word); currPath=path[:]
+                currPath.reverse(); result.append(currPath)
+                path.pop();
+                return
+            path.append(word)
+            for iter in prevMap[word]:
+                buildpath(path, iter)
+            path.pop()
+        
+        result=[]
+        prevMap={}
+        length=len(beginWord)
+        dic = {}
+        for i in wordList:
+            prevMap[i]=[]
+            dic[i] = 1
+        prevMap[beginWord] = []
+        dic[beginWord] = 1
+        candidates=[set(),set()]; current=0; previous=1
+        candidates[current].add(beginWord)
+        
+        while True:
+            current, previous=previous, current
+            for i in candidates[previous]: 
+                del dic[i]
+            # del dic[list(candidates[previous])]
+            candidates[current].clear()
+            for word in candidates[previous]:
+                for i in range(length):
+                    part1=word[:i]; part2=word[i+1:]
+                    for j in 'abcdefghijklmnopqrstuvwxyz':
+                        if word[i]!=j:
+                            nextword=part1+j+part2
+                            if nextword in dic:
+                                prevMap[nextword].append(word)
+                                candidates[current].add(nextword)
+            if len(candidates[current])==0: return result
+            if endWord in candidates[current]: break
+        buildpath([], endWord)
+        return result
