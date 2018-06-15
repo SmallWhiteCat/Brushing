@@ -1,0 +1,25 @@
+class Solution:
+    def minStickers(self, stickers, target):
+        """
+        :type stickers: List[str]
+        :type target: str
+        :rtype: int
+        """
+        
+        len_tar = len(target)      
+        n = 2**len_tar
+        dp = [len_tar]*n
+        dp[0] = 0
+        Max = len_tar
+        for i in range(n):
+            if dp[i] == Max:  continue
+            for s in stickers:
+                tmp = i
+                for c in s:
+                    for t in range(len_tar):
+                        if target[t] == c and ((tmp>>t)&1) == 0:
+                            tmp |= (1<<t)
+                            break
+                dp[tmp] = min(dp[tmp], dp[i]+1)
+        return dp[n-1] if dp[n-1]!=Max else -1
+                
