@@ -1,0 +1,79 @@
+import re
+class Solution:
+    def isValid(self, code):
+        """
+        :type code: str
+        :rtype: bool
+        """
+        def is_cdata(s):
+            if re.search(r"<!\[CDATA\[", s):
+                i_0, i_1 = re.search(r"<!\[CDATA\[", s).span()
+                if re.search(r"\]\]>", s[i_1:]):
+                    j_0, j_1 = re.search(r"\]\]>", s[i_1:]).span()
+                    s = s[:i_0]+s[i_1+j_1:]
+                    # print(s, i_0, i_1, j_0, j_1)
+                    if re.search(r"<!\[CDATA\[", s):
+                        return is_cdata(s)
+                    else:
+                        # print(s)
+                        return s
+                else:
+                    return False
+            else:
+                return s
+        def is_TAGNAME(s):
+            if re.search(r'<(.*?)>', s):
+                name = re.search(r'<(.*?)>', s)
+                is_upper = name.group(1).isupper()
+                # print(s)
+                if not is_upper:
+                    return False
+                i_0, i_1 = name.span()
+                if re.search(r'</'+name.group(1)+r'>', s[i_1:]):
+                    name_ = re.search(r'</'+name.group(1)+r'>', s[i_1:])
+                    j_0, j_1 = name_.span()
+                    # print(1,s)
+ 
+                    # print(s[i_1+j_1:])
+                    inner = re.search(r'<(.*?)>', s[i_1:i_1+j_0])
+                    if inner:
+                        return is_TAGNAME(s[i_1:i_1+j_0])
+                    outer = re.search(r'<(.*?)>', s[i_1+j_1:])
+                    if outer:
+                        return is_TAGNAME(s[i_1+j_1:])     
+                    if not inner or not outer:
+                        return s[i_1:j_0]
+                else:
+                    # print(1)
+                    return False
+            else:
+                return s
+        def first_TAG(s):
+            if re.match(r'<(.*?)>', s):
+                name = re.search(r'<(.*?)>', s)
+                is_upper = name.group(1).isupper()
+                if len(name.group(1)) >= 10:
+                    return False
+                if not is_upper:
+                    return False
+                i_0, i_1 = name.span()
+                if re.search(r'</'+name.group(1)+r'>', s[len(s)-1-(i_1-i_0):]) and s[len(s)+1-(i_1-i_0):len(s)-1].isupper():      
+                    return s
+                return False
+            return False
+        check_first = first_TAG(code)
+        if check_first:
+            move_cdata = is_cdata(code)
+            # print(move_cdata)
+            if move_cdata:
+                
+                move_tag_cdata = is_TAGNAME(move_cdata)
+                # print(move_tag_cdata)
+                if move_tag_cdata == False:
+                    return False
+                if move_tag_cdata:
+                    if re.search(r'<', move_tag_cdata) or re.search(r'</(.*?)>', move_tag_cdata):
+                        # print(move_tag_cdata, re.search(r'<', move_tag_cdata))
+                        return False
+                return True
+        return False
