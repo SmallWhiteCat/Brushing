@@ -1,0 +1,39 @@
+class Solution:
+    def threeSumClosest(self, nums, target):
+        """
+        :type nums: List[int]
+        :type target: int
+        :rtype: int
+        """
+        if len(nums) < 3:
+            return 0
+        nums.sort()
+        print(nums)
+        nearest = abs(sum(nums[:3])-target)
+        n = len(nums)
+        print(n)
+        if sum(nums[:3]) < target:
+            sign = -1
+        else:
+            sign = 1
+        for i in range(n-2):
+            if i>0 and nums[i]==nums[i-1]:
+                continue
+            for j in range(i+1, n-1):
+                if j>i+1 and nums[j]==nums[j-1]:
+                    continue
+                tmp = nums[i]+nums[j]
+                near = abs(tmp + nums[j+1] - target)
+                for k in range(j+1,n):
+                    sum_three = abs(tmp+nums[k]-target)
+                    if sum_three > near and nums[k]>0:
+                        break
+                    if sum_three < nearest:
+                        if tmp+nums[k] < target:
+                            sign = -1
+                        else:
+                            sign = 1
+                        nearest = sum_three
+                    near = sum_three
+        # print(nearest, target)
+        return nearest*sign + target
